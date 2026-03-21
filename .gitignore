@@ -12,3 +12,4 @@ __pycache__/
 
 # Config con API keys
 controllers/terrain_robot/config.py
+.env

@@ -1,9 +1,17 @@
 def execute_plan(plan, motors):
-    """Interpreta un plan JSON de Claude y ejecuta las acciones."""
-    if not plan or "acciones" not in plan:
+    """Interpreta un plan de Claude y ejecuta las acciones.
+    Acepta dict con 'acciones' o lista directa de acciones."""
+    if not plan:
         return
 
-    for accion in plan["acciones"]:
+    if isinstance(plan, list):
+        acciones = plan
+    elif isinstance(plan, dict):
+        acciones = plan.get("acciones", [])
+    else:
+        return
+
+    for accion in acciones:
         fn = accion.get("fn")
         args = accion.get("args", {})
 

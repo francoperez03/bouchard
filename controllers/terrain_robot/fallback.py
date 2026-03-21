@@ -5,8 +5,7 @@ Obstacle avoidance básico + exploración simple.
 
 import random
 
-
-VELOCIDADES = {"metal": 60, "carpet": 50, "sand": 35, "rough": 25, "ramp": 30}
+from terrain_rules import TERRAIN_SPEEDS, SAFETY_THRESHOLDS
 
 
 def fallback_behavior(data, motors):
@@ -20,7 +19,7 @@ def fallback_behavior(data, motors):
     left = ps.get("ps5", 0) + ps.get("ps6", 0)
 
     # Obstáculo frontal: retroceder primero para ganar espacio
-    if front_right > 100 or front_left > 100:
+    if front_right > SAFETY_THRESHOLDS["prox_warning"] or front_left > SAFETY_THRESHOLDS["prox_warning"]:
         motors.retroceder(30)
         if left < right:
             motors.girar(-45)
@@ -40,16 +39,16 @@ def fallback_behavior(data, motors):
 
     # Velocidad según terreno detectado
     terreno = data.get("terreno_detectado", "metal")
-    velocidad = VELOCIDADES.get(terreno, 40)
+    velocidad = TERRAIN_SPEEDS.get(terreno, 40)
 
     # Reducir si hay patinaje
     slip = data.get("slip_ratio", 0)
-    if slip > 0.3:
+    if slip > SAFETY_THRESHOLDS["slip_max"]:
         velocidad = max(20, velocidad - 15)
 
     # Reducir en rampa/inclinación
     inclinacion = data.get("inclinacion", 0)
-    if inclinacion > 10:
+    if inclinacion > SAFETY_THRESHOLDS["incline_max"]:
         velocidad = max(20, velocidad - 10)
 
     # Giro aleatorio ocasional para explorar

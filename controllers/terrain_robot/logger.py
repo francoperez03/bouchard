@@ -39,6 +39,9 @@ class DataLogger:
             "inclinacion": data.get("inclinacion", ""),
             "front_min": data.get("front_min", ""),
             "side_min": data.get("side_min", ""),
+            "x": data.get("pose", {}).get("x", 0),
+            "y": data.get("pose", {}).get("y", 0),
+            "theta": data.get("pose", {}).get("theta", 0),
             "safety": safety_status,
             "action": action,
         }

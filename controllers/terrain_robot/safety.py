@@ -1,11 +1,14 @@
+from terrain_rules import SAFETY_THRESHOLDS
+
+
 class SafetyCheck:
-    PROX_DANGER = 150
-    TILT_ACCEL_Z_MIN = 7.0
-    WARMUP_CYCLES = 50  # ignorar tilt durante estabilización
 
     def __init__(self, motors):
         self.motors = motors
         self._cycle = 0
+        self.PROX_DANGER = SAFETY_THRESHOLDS["prox_danger"]
+        self.TILT_ACCEL_Z_MIN = SAFETY_THRESHOLDS["tilt_accel_z_min"]
+        self.WARMUP_CYCLES = SAFETY_THRESHOLDS["warmup_cycles"]
 
     def check(self, data):
         """Revisa datos de sensores y frena si hay peligro.
