@@ -1,57 +1,57 @@
 # Bouchard
 
-Robot autonomo con navegacion estrategica por IA. Un e-puck en Webots que explora una arena de terrenos variados usando dos capas de inteligencia: reflejos instantaneos + planificacion con Claude.
+Autonomous robot with AI-powered strategic navigation. An e-puck in Webots that explores a multi-terrain arena using two layers of intelligence: instant reflexes + planning with Claude.
 
-Nombrado en honor a Hipolito Bouchard, corsario argentino que navegaba terreno hostil con estrategia.
+Named after Hipolito Bouchard, the Argentine corsair who navigated hostile terrain with strategy and audacity.
 
-## Arquitectura
+## Architecture
 
 ```
-Sensores (8 IR + IMU + odometria)
+Sensors (8 IR + IMU + odometry)
     |
     v
 +-------------------+     +---------------------+
-| Capa Reflexiva    |     | Capa Estrategica    |
-| (cada step, 32ms) |     | (periodica, Claude) |
-| - Obstaculos      |     | - Mapa de ocupacion |
-| - Terreno         |     | - Fronteras         |
-| - Emergencias     |     | - Objetivos         |
+| Reflex Layer      |     | Strategy Layer      |
+| (every step, 32ms)|     | (periodic, Claude)  |
+| - Obstacles       |     | - Occupancy map     |
+| - Terrain         |     | - Frontiers         |
+| - Emergencies     |     | - Goals             |
 +-------------------+     +---------------------+
     |                           |
     |   reflexes > strategy     |
     v                           v
 +-------------------------------+
-|         Motores               |
-|   (diferencial, e-puck)      |
+|          Motors               |
+|    (differential, e-puck)    |
 +-------------------------------+
 ```
 
-**Capa reflexiva** — corre cada 32ms. Detecta obstaculos, clasifica terreno (metal, arena, carpet, rough, rampa), compensa deslizamiento, y frena en emergencias. No piensa, reacciona.
+**Reflex layer** — runs every 32ms. Detects obstacles, classifies terrain (metal, sand, carpet, rough, ramp), compensates for slip, and brakes on emergencies. Doesn't think, reacts.
 
-**Capa estrategica** — consulta a Claude periodicamente. Analiza el mapa de ocupacion, identifica fronteras inexploradas, y decide hacia donde explorar. No controla motores, planifica rutas.
+**Strategy layer** — queries Claude periodically. Analyzes the occupancy map, identifies unexplored frontiers, and decides where to explore. Doesn't control motors, plans routes.
 
-En caso de conflicto, los reflejos siempre ganan.
+When in conflict, reflexes always win.
 
-## La arena
+## The Arena
 
-Arena de 3x3m en Webots con 5 tipos de terreno:
+3x3m arena in Webots with 5 terrain types:
 
-| Terreno | Friccion | Velocidad | Comportamiento |
-|---------|----------|-----------|----------------|
-| Metal | Baja | 60% | Superficie lisa, traccion alta |
-| Arena | Variable | 35% | Deslizamiento alto, compensacion de slip |
-| Carpet | Alta | 50% | Navegacion estable |
-| Rough | Irregular | 25% | Vibracion alta, monitoreo de estabilidad |
-| Rampa | Media | 30% | Ajuste de potencia por gravedad |
+| Terrain | Friction | Speed | Behavior |
+|---------|----------|-------|----------|
+| Metal | Low | 60% | Smooth surface, high traction |
+| Sand | Variable | 35% | High slip, slip compensation active |
+| Carpet | High | 50% | Stable navigation |
+| Rough | Irregular | 25% | High vibration, stability monitoring |
+| Ramp | Medium | 30% | Power adjustment for gravity |
 
-Obstaculos: oil barrels, traffic cones, cajas de madera/carton, plastic crates.
+Obstacles: oil barrels, traffic cones, wooden/cardboard boxes, plastic crates.
 
-## Requisitos
+## Requirements
 
 - [Webots R2025a](https://cyberbotics.com/)
-- Python 3.10+ (viene con Webots)
-- Node.js 20+ (para el dashboard web)
-- Una API key de [Anthropic](https://console.anthropic.com/) (opcional, funciona sin ella en modo fallback)
+- Python 3.10+ (bundled with Webots)
+- Node.js 20+ (for the web dashboard)
+- An [Anthropic](https://console.anthropic.com/) API key (optional — works without it in fallback mode)
 
 ## Setup
 
@@ -60,30 +60,30 @@ git clone https://github.com/francoperez03/bouchard.git
 cd bouchard
 ```
 
-### 1. Configurar API key (opcional)
+### 1. Configure API key (optional)
 
 ```bash
 cp .env.example .env
-# Editar .env con tu ANTHROPIC_API_KEY
+# Edit .env with your ANTHROPIC_API_KEY
 ```
 
-O exportar directamente:
+Or export directly:
 
 ```bash
-export ANTHROPIC_API_KEY=sk-ant-tu-key-aqui
+export ANTHROPIC_API_KEY=sk-ant-your-key-here
 ```
 
-Sin API key el robot funciona en **modo fallback** con heuristicas de navegacion.
+Without an API key the robot runs in **fallback mode** with heuristic navigation.
 
-### 2. Correr el robot
+### 2. Run the robot
 
-1. Abrir Webots
+1. Open Webots
 2. File → Open World → `worlds/terrain_arena.wbt`
 3. Click Run
 
-El controller arranca automaticamente, lee sensores, y navega la arena. Un servidor API se levanta en `http://localhost:8765`.
+The controller starts automatically, reads sensors, and navigates the arena. An API server spins up at `http://localhost:8765`.
 
-### 3. Dashboard web
+### 3. Web dashboard
 
 ```bash
 cd web
@@ -91,37 +91,37 @@ npm install
 npm run dev
 ```
 
-Abrir `http://localhost:5173`. Tres vistas:
+Open `http://localhost:5173`. Three views:
 
-- **Landing** (`/`) — overview del proyecto
-- **Status** (`/status`) — sensores en tiempo real, mapa de ocupacion, estado de capas
-- **Control** (`/control`) — control remoto con D-pad, cambio de modo autonomo/manual
+- **Landing** (`/`) — project overview
+- **Status** (`/status`) — real-time sensors, occupancy map, layer status
+- **Control** (`/control`) — remote control with D-pad, autonomous/manual mode switching
 
-## Estructura del proyecto
+## Project Structure
 
 ```
 bouchard/
 ├── worlds/
-│   └── terrain_arena.wbt          # Arena 3x3m con 5 terrenos
+│   └── terrain_arena.wbt          # 3x3m arena with 5 terrains
 ├── controllers/terrain_robot/
-│   ├── terrain_robot.py           # Loop principal
-│   ├── sensors.py                 # 8 IR + accel + gyro + odometria
-│   ├── motors.py                  # Control diferencial
-│   ├── reflex_layer.py            # Capa reflexiva (cada step)
-│   ├── strategy_layer.py          # Capa estrategica (periodica)
+│   ├── terrain_robot.py           # Main loop
+│   ├── sensors.py                 # 8 IR + accel + gyro + odometry
+│   ├── motors.py                  # Differential drive
+│   ├── reflex_layer.py            # Reflex layer (every step)
+│   ├── strategy_layer.py          # Strategy layer (periodic)
 │   ├── claude_client.py           # Claude API + tool use + cache
-│   ├── occupancy_map.py           # Grid 5cm de resolucion
-│   ├── goal_manager.py            # Estado de objetivos
-│   ├── feedback.py                # Feedback de resultados a Claude
-│   ├── history_manager.py         # Compresion de historial
-│   ├── terrain_rules.py           # Constantes de terreno y seguridad
-│   ├── api_server.py              # HTTP server para dashboard
-│   ├── executor.py                # Ejecuta planes JSON
-│   ├── fallback.py                # Navegacion sin Claude
+│   ├── occupancy_map.py           # 5cm resolution grid
+│   ├── goal_manager.py            # Goal state machine
+│   ├── feedback.py                # Outcome feedback to Claude
+│   ├── history_manager.py         # Session history compression
+│   ├── terrain_rules.py           # Terrain constants and safety thresholds
+│   ├── api_server.py              # HTTP server for dashboard
+│   ├── executor.py                # Executes JSON plans
+│   ├── fallback.py                # Navigation without Claude
 │   ├── prompts.py                 # System prompt
-│   ├── config.py                  # Lee ANTHROPIC_API_KEY del env
-│   └── logger.py                  # Log CSV
-├── web/                           # Dashboard React + Vite
+│   ├── config.py                  # Reads ANTHROPIC_API_KEY from env
+│   └── logger.py                  # CSV logging
+├── web/                           # React + Vite dashboard
 │   ├── src/
 │   │   ├── pages/                 # Landing, Status, Control
 │   │   ├── components/            # SensorPanel, MapCanvas, CommandPanel...
@@ -130,67 +130,67 @@ bouchard/
 │   │   ├── hooks/                 # useRobotState, useCommands
 │   │   └── types/                 # TypeScript interfaces
 │   └── public/
-│       └── arena-demo.mov         # Video de la simulacion
+│       └── arena-demo.mov         # Simulation video
 ├── scripts/
-│   ├── dashboard.py               # Visualizacion de logs con matplotlib
-│   └── benchmark.py               # Comparacion de runs
-├── docs/prd/                      # Product Requirements (17 PRDs, 5 fases)
+│   ├── dashboard.py               # Log visualization with matplotlib
+│   └── benchmark.py               # Run comparison
+├── docs/prd/                      # Product Requirements (17 PRDs, 5 phases)
 └── requirements.txt               # matplotlib
 ```
 
-## Como funciona
+## How It Works
 
-Cada ciclo de 32ms:
+Every 32ms cycle:
 
-1. **Sensores** — lee 8 IR, acelerometro, giroscopio, encoders. Calcula pose por dead-reckoning.
-2. **Mapa** — actualiza occupancy grid con ray-casting desde cada sensor. Marca celdas libres, ocupadas, y fronteras.
-3. **Reflejos** — determina velocidad segura segun terreno, slip, inclinacion. Si hay peligro, override inmediato.
-4. **Estrategia** (cada ~300 steps) — envia mapa comprimido a Claude. Claude elige entre: explorar frontera, backtrack, patrullar area, o investigar punto de interes.
-5. **Motores** — ejecuta el comando resultante con control diferencial.
-6. **Log** — graba telemetria y accion en CSV.
+1. **Sensors** — reads 8 IR, accelerometer, gyroscope, encoders. Computes pose via dead-reckoning.
+2. **Map** — updates occupancy grid with ray-casting from each sensor. Marks cells as free, occupied, or frontier.
+3. **Reflexes** — determines safe speed based on terrain, slip, tilt. If danger is detected, immediate override.
+4. **Strategy** (every ~300 steps) — sends compressed map to Claude. Claude chooses between: explore frontier, backtrack, patrol area, or investigate point of interest.
+5. **Motors** — executes the resulting command with differential drive.
+6. **Log** — records telemetry and action to CSV.
 
-### Tool use de Claude
+### Claude Tool Use
 
-Claude no recibe texto libre. Usa herramientas estructuradas:
+Claude doesn't receive free-form text. It uses structured tools:
 
 ```
-set_exploration_target(x, y)    → ir a coordenada
-backtrack()                     → volver a zona segura
-patrol_area(x1, y1, x2, y2)    → patrullar rectangulo
-investigate(x, y)               → inspeccionar punto
+set_exploration_target(x, y)    → go to coordinate
+backtrack()                     → return to safe zone
+patrol_area(x1, y1, x2, y2)    → patrol rectangle
+investigate(x, y)               → inspect point
 ```
 
-Las respuestas se cachean (TTL: 500 steps) para evitar llamadas redundantes. Maximo 200 calls por sesion.
+Responses are cached (TTL: 500 steps) to avoid redundant calls. Max 200 calls per session.
 
-## Tesis
+## Thesis
 
-> Claude navega >30% mejor que heuristicas simples cuando tiene un mapa parcial y arenas complejas.
+> Claude navigates >30% better than simple heuristics when it has a partial map and complex arenas.
 
-Sin el mapa, la IA solo reacciona a lo inmediato. Con el mapa, elige fronteras de alto valor, evita zonas mapeadas, y planifica secuencias multi-paso.
+Without the map, the AI can only react to what's immediately around it. With the map, it picks high-value frontiers, avoids already-mapped zones, and plans multi-step exploration sequences.
 
-## Analisis de resultados
+## Analyze Results
 
 ```bash
-# Visualizar un run
+# Visualize a run
 python scripts/dashboard.py controllers/terrain_robot/terrain_log.csv
 
-# Comparar multiples runs
+# Compare multiple runs
 python scripts/benchmark.py analyze --dir results/
 ```
 
-## Modos de operacion
+## Operation Modes
 
-| Modo | Descripcion |
+| Mode | Description |
 |------|-------------|
-| **Autonomo + Claude** | Estrategia IA + reflejos. El robot explora solo. |
-| **Autonomo fallback** | Sin API key. Heuristicas + reflejos. |
-| **Manual** | Control remoto via dashboard. Reflejos siguen activos por seguridad. |
+| **Autonomous + Claude** | AI strategy + reflexes. The robot explores on its own. |
+| **Autonomous fallback** | No API key. Heuristics + reflexes. |
+| **Manual** | Remote control via dashboard. Reflexes stay active for safety. |
 
 ## Stack
 
-- **Simulacion**: Webots R2025a
-- **Robot**: e-puck (diferencial, 8 IR, IMU)
-- **IA**: Claude Haiku 4.5 (tool use)
-- **Controller**: Python (stdlib)
+- **Simulation**: Webots R2025a
+- **Robot**: e-puck (differential drive, 8 IR, IMU)
+- **AI**: Claude Haiku 4.5 (tool use)
+- **Controller**: Python (stdlib only)
 - **Dashboard**: React 19 + TypeScript + Tailwind CSS + Vite
-- **Visualizacion**: matplotlib
+- **Visualization**: matplotlib
