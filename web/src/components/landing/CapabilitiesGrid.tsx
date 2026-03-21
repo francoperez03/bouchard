@@ -4,27 +4,27 @@ import { SectionBadge } from "./SectionBadge";
 const FEATURES = [
   {
     icon: Radar,
-    title: "Sensores 360°",
+    title: "360° Sensors",
     description:
-      "8 infrarrojos en anillo, acelerometro, giroscopio y encoders. Deteccion completa del entorno a cada step.",
+      "8 infrared in a ring, accelerometer, gyroscope, and encoders. Full environment detection every step.",
   },
   {
     icon: Map,
-    title: "Mapa en Tiempo Real",
+    title: "Real-Time Map",
     description:
-      "Occupancy grid de 5cm de resolucion. Ray-casting desde cada sensor marca celdas libres, ocupadas, y fronteras.",
+      "5cm resolution occupancy grid. Ray-casting from each sensor marks cells as free, occupied, or frontier.",
   },
   {
     icon: Mountain,
-    title: "Clasificacion de Terreno",
+    title: "Terrain Classification",
     description:
-      "Metal, arena, carpet, rough, rampas. El robot identifica el suelo y adapta velocidad y traccion automaticamente.",
+      "Metal, sand, carpet, rough, ramps. The robot identifies the surface and adapts speed and traction automatically.",
   },
   {
     icon: Brain,
-    title: "IA Estrategica",
+    title: "Strategic AI",
     description:
-      "Claude analiza el mapa parcial y elige fronteras de exploracion. Piensa a nivel estrategico, no a nivel motor.",
+      "Claude analyzes the partial map and picks exploration frontiers. Thinks at a strategic level, not motor level.",
   },
 ];
 
@@ -33,9 +33,9 @@ export function CapabilitiesGrid() {
     <section className="px-6 py-24 md:px-16 lg:px-24">
       <div className="mx-auto max-w-7xl">
         <div className="mb-16 text-center">
-          <SectionBadge label="Capacidades" />
+          <SectionBadge label="Capabilities" />
           <h2 className="mt-6 font-heading text-4xl italic tracking-tight leading-[0.9] text-white md:text-5xl">
-            Todo lo que necesita para explorar.
+            Everything it needs to explore.
           </h2>
         </div>
 

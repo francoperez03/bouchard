@@ -1,22 +1,29 @@
 import { useRobotState } from "../hooks/useRobotState";
+import { useEventFeed } from "../hooks/useEventFeed";
 import { useConnection } from "../contexts/ConnectionContext";
 import { SensorPanel } from "../components/SensorPanel";
-import { PoseDisplay } from "../components/PoseDisplay";
-import { MapCanvas } from "../components/MapCanvas";
+import { IMUPanel } from "../components/IMUPanel";
+import { UnifiedMap } from "../components/UnifiedMap";
 import { LayerStatus } from "../components/LayerStatus";
 import { MetricsBar } from "../components/MetricsBar";
+import { EventFeed } from "../components/EventFeed";
+import { TerrainZones } from "../components/TerrainZones";
 
 export function StatusPage() {
   const { connected } = useConnection();
   const { state, poseTrail } = useRobotState();
+  const events = useEventFeed(state);
 
   if (!connected || !state) {
     return (
-      <div style={{ padding: 20, color: "#94a3b8" }}>
-        <h2 style={{ fontSize: 20 }}>Status Dashboard</h2>
-        <p>Esperando conexion al robot...</p>
-        <p style={{ fontSize: 13 }}>
-          Asegurate de que el robot este corriendo en Webots y el API server este activo en puerto 8765.
+      <div className="flex flex-col items-center justify-center py-32 text-center">
+        <h2 className="font-heading text-3xl italic text-white">Status</h2>
+        <p className="mt-4 font-body text-sm text-white/60">
+          Waiting for robot connection...
+        </p>
+        <p className="mt-2 font-body text-xs text-white/40">
+          Make sure the robot is running in Webots and the API server
+          is active on port 8765.
         </p>
       </div>
     );
@@ -26,29 +33,32 @@ export function StatusPage() {
     <div>
       <MetricsBar state={state} />
 
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "1fr 1fr",
-          gap: 20,
-          marginTop: 16,
-        }}
-      >
-        {/* Left column */}
-        <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+      {/* Full-width unified map */}
+      <div className="mt-6">
+        <UnifiedMap
+          map={state.map}
+          pose={state.sensors.pose}
+          trail={poseTrail}
+        />
+      </div>
+
+      {/* Three-column panel row */}
+      <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-3">
+        <div className="flex flex-col gap-6">
           <SensorPanel sensors={state.sensors} />
-          <PoseDisplay pose={state.sensors.pose} trail={poseTrail} />
+          <IMUPanel sensors={state.sensors} />
         </div>
 
-        {/* Right column */}
-        <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
-          <MapCanvas map={state.map} pose={state.sensors.pose} />
+        <div className="flex flex-col gap-6">
           <LayerStatus
             reflex={state.reflex}
             strategy={state.strategy}
             claudeCalls={state.claude_calls}
           />
+          <TerrainZones terrainZones={state.map.terrain_zones} />
         </div>
+
+        <EventFeed events={events} />
       </div>
     </div>
   );

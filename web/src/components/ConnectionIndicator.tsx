@@ -1,21 +1,21 @@
 import { useConnection } from "../contexts/ConnectionContext";
+import { cn } from "@/lib/utils";
 
 export function ConnectionIndicator() {
   const { connected } = useConnection();
 
   return (
-    <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 0" }}>
+    <div className="flex items-center gap-2 py-2">
       <div
-        style={{
-          width: 10,
-          height: 10,
-          borderRadius: "50%",
-          backgroundColor: connected ? "#22c55e" : "#ef4444",
-          boxShadow: connected ? "0 0 6px #22c55e" : "0 0 6px #ef4444",
-        }}
+        className={cn(
+          "h-2.5 w-2.5 rounded-full",
+          connected
+            ? "bg-green-500 shadow-[0_0_6px_#22c55e]"
+            : "bg-red-500 shadow-[0_0_6px_#ef4444]"
+        )}
       />
-      <span style={{ fontSize: 13, color: "#94a3b8" }}>
-        {connected ? "Conectado" : "Desconectado - robot no activo"}
+      <span className="font-body text-xs text-white/50">
+        {connected ? "Connected" : "Disconnected"}
       </span>
     </div>
   );

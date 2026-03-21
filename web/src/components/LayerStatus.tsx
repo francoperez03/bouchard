@@ -1,3 +1,4 @@
+import { cn } from "@/lib/utils";
 import type { ReflexState, StrategyState } from "../types/robot";
 
 interface Props {
@@ -9,50 +10,38 @@ interface Props {
 
 export function LayerStatus({ reflex, strategy, claudeCalls, maxCalls = 200 }: Props) {
   return (
-    <div>
-      <h3 style={{ fontSize: 14, marginBottom: 8, color: "#94a3b8" }}>Capas</h3>
+    <div className="liquid-glass rounded-2xl p-6">
+      <h3 className="font-heading text-lg italic text-white">Layers</h3>
 
       {/* Reflex Layer */}
       <div
-        style={{
-          padding: 10,
-          borderRadius: 6,
-          marginBottom: 8,
-          background: reflex.emergency ? "#7f1d1d" : "#1e293b",
-          border: `1px solid ${reflex.emergency ? "#ef4444" : "#334155"}`,
-          animation: reflex.emergency ? "pulse 1s infinite" : undefined,
-        }}
+        className={cn(
+          "mt-4 rounded-xl p-4",
+          reflex.emergency
+            ? "bg-red-900/40 ring-1 ring-red-500/50 animate-pulse"
+            : "liquid-glass"
+        )}
       >
-        <div style={{ fontSize: 12, color: "#94a3b8", marginBottom: 4 }}>Reflex</div>
-        <div style={{ fontSize: 13, color: "#e2e8f0" }}>{reflex.description || "idle"}</div>
-        <div style={{ fontSize: 12, color: "#64748b", marginTop: 4 }}>
-          vel: {reflex.velocity} | emergency: {reflex.emergency ? "SI" : "no"}
+        <div className="font-body text-xs text-white/40">Reflex</div>
+        <div className="mt-1 font-body text-sm text-white/80">
+          {reflex.description || "idle"}
+        </div>
+        <div className="mt-2 font-body text-xs text-white/40">
+          vel: {reflex.velocity} | emergency: {reflex.emergency ? "YES" : "no"}
           {reflex.heading_override != null && ` | override: ${reflex.heading_override}deg`}
         </div>
       </div>
 
       {/* Strategy Layer */}
-      <div
-        style={{
-          padding: 10,
-          borderRadius: 6,
-          background: "#1e293b",
-          border: "1px solid #334155",
-        }}
-      >
-        <div style={{ fontSize: 12, color: "#94a3b8", marginBottom: 4 }}>Strategy</div>
-        <div style={{ fontSize: 13, color: "#e2e8f0" }}>{strategy.description || "idle"}</div>
-        <div style={{ fontSize: 12, color: "#64748b", marginTop: 4 }}>
-          activo: {strategy.has_action ? "si" : "no"} | Claude calls: {claudeCalls}/{maxCalls}
+      <div className="liquid-glass mt-3 rounded-xl p-4">
+        <div className="font-body text-xs text-white/40">Strategy</div>
+        <div className="mt-1 font-body text-sm text-white/80">
+          {strategy.description || "idle"}
+        </div>
+        <div className="mt-2 font-body text-xs text-white/40">
+          active: {strategy.has_action ? "yes" : "no"} | Claude calls: {claudeCalls}/{maxCalls}
         </div>
       </div>
-
-      <style>{`
-        @keyframes pulse {
-          0%, 100% { opacity: 1; }
-          50% { opacity: 0.7; }
-        }
-      `}</style>
     </div>
   );
 }

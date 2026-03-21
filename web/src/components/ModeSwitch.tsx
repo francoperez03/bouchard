@@ -1,3 +1,4 @@
+import { cn } from "@/lib/utils";
 import { useCommands } from "../hooks/useCommands";
 
 interface Props {
@@ -16,35 +17,27 @@ export function ModeSwitch({ mode }: Props) {
   };
 
   return (
-    <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-      <span style={{ fontSize: 13, color: isManual ? "#475569" : "#93c5fd" }}>Auto</span>
+    <div className="flex items-center gap-3">
+      <span className={cn("font-body text-sm", isManual ? "text-white/30" : "text-blue-300")}>
+        Auto
+      </span>
       <button
         onClick={toggle}
-        style={{
-          width: 48,
-          height: 26,
-          borderRadius: 13,
-          border: "none",
-          background: isManual ? "#854d0e" : "#1e3a5f",
-          cursor: "pointer",
-          position: "relative",
-          transition: "background 0.2s",
-        }}
+        className={cn(
+          "relative h-7 w-12 cursor-pointer rounded-full border-none transition-colors",
+          isManual ? "bg-yellow-800" : "bg-blue-900"
+        )}
       >
         <div
-          style={{
-            width: 20,
-            height: 20,
-            borderRadius: "50%",
-            background: isManual ? "#fde047" : "#93c5fd",
-            position: "absolute",
-            top: 3,
-            left: isManual ? 25 : 3,
-            transition: "left 0.2s",
-          }}
+          className={cn(
+            "absolute top-[3px] h-5 w-5 rounded-full transition-[left] duration-200",
+            isManual ? "left-[25px] bg-yellow-300" : "left-[3px] bg-blue-300"
+          )}
         />
       </button>
-      <span style={{ fontSize: 13, color: isManual ? "#fde047" : "#475569" }}>Manual</span>
+      <span className={cn("font-body text-sm", isManual ? "text-yellow-300" : "text-white/30")}>
+        Manual
+      </span>
     </div>
   );
 }

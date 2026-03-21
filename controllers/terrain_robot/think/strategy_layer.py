@@ -4,9 +4,9 @@ Se actualiza periodicamente. Usa GoalManager para ciclo de vida de goals.
 """
 
 import math
-from goal_manager import GoalManager
-from feedback import FeedbackTracker
-from history_manager import HistoryManager
+from .goal_manager import GoalManager
+from .feedback import FeedbackTracker
+from .history_manager import HistoryManager
 
 
 class StrategyResult:

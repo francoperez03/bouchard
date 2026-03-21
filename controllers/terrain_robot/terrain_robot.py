@@ -6,18 +6,18 @@ Arquitectura de dos capas: reflex (cada step) + strategy (periodico via Claude).
 Servidor API embebido para dashboard web y control remoto.
 """
 from controller import Robot
-from sensors import SensorManager
-from motors import MotorManager
-from reflex_layer import ReflexLayer
-from strategy_layer import StrategyLayer
-from logger import DataLogger
-from occupancy_map import OccupancyMap
-from executor import execute_plan
+from sense.sensors import SensorManager
+from act.motors import MotorManager
+from think.reflex_layer import ReflexLayer
+from think.strategy_layer import StrategyLayer
+from infra.logger import DataLogger
+from sense.occupancy_map import OccupancyMap
+from act.executor import execute_plan
 
 # Intentar importar Claude client
 try:
-    from claude_client import ask_claude, get_cache
-    from config import CLAUDE_API_KEY
+    from think.claude_client import ask_claude, get_cache
+    from think.config import CLAUDE_API_KEY
     CLAUDE_AVAILABLE = bool(CLAUDE_API_KEY and CLAUDE_API_KEY.startswith("sk-ant-"))
 except Exception:
     CLAUDE_AVAILABLE = False
@@ -26,7 +26,7 @@ except Exception:
 
 # Intentar importar API server
 try:
-    from api_server import SharedState, CommandQueue, start_server
+    from infra.api_server import SharedState, CommandQueue, start_server
     API_AVAILABLE = True
 except Exception as e:
     print(f"[terrain_robot] API server no disponible: {e}")

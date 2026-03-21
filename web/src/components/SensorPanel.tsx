@@ -26,47 +26,49 @@ export function SensorPanel({ sensors }: Props) {
   const maxBarLen = 50;
 
   return (
-    <div>
-      <h3 style={{ fontSize: 14, marginBottom: 8, color: "#94a3b8" }}>Sensores IR</h3>
-      <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
-        {/* Robot body */}
-        <circle cx={cx} cy={cy} r={robotR} fill="#334155" stroke="#64748b" strokeWidth={1.5} />
-        {/* Front indicator */}
-        <line x1={cx} y1={cy} x2={cx + 15} y2={cy - 5} stroke="#64748b" strokeWidth={1} />
+    <div className="liquid-glass rounded-2xl p-6">
+      <h3 className="font-heading text-lg italic text-white">IR Sensors</h3>
+      <div className="mt-4 flex justify-center">
+        <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
+          {/* Robot body */}
+          <circle cx={cx} cy={cy} r={robotR} fill="#334155" stroke="#64748b" strokeWidth={1.5} />
+          {/* Front indicator */}
+          <line x1={cx} y1={cy} x2={cx + 15} y2={cy - 5} stroke="#64748b" strokeWidth={1} />
 
-        {/* Sensor bars */}
-        {Object.entries(sensors.proximidad).map(([name, value]) => {
-          const angleDeg = SENSOR_ANGLES[name];
-          if (angleDeg === undefined) return null;
-          const angleRad = ((angleDeg - 90) * Math.PI) / 180;
-          const barLen = Math.min((value / 300) * maxBarLen, maxBarLen);
-          const x1 = cx + Math.cos(angleRad) * (robotR + 4);
-          const y1 = cy + Math.sin(angleRad) * (robotR + 4);
-          const x2 = cx + Math.cos(angleRad) * (robotR + 4 + barLen);
-          const y2 = cy + Math.sin(angleRad) * (robotR + 4 + barLen);
+          {/* Sensor bars */}
+          {Object.entries(sensors.proximidad).map(([name, value]) => {
+            const angleDeg = SENSOR_ANGLES[name];
+            if (angleDeg === undefined) return null;
+            const angleRad = ((angleDeg - 90) * Math.PI) / 180;
+            const barLen = Math.min((value / 300) * maxBarLen, maxBarLen);
+            const x1 = cx + Math.cos(angleRad) * (robotR + 4);
+            const y1 = cy + Math.sin(angleRad) * (robotR + 4);
+            const x2 = cx + Math.cos(angleRad) * (robotR + 4 + barLen);
+            const y2 = cy + Math.sin(angleRad) * (robotR + 4 + barLen);
 
-          return (
-            <g key={name}>
-              <line
-                x1={x1} y1={y1} x2={x2} y2={y2}
-                stroke={sensorColor(value)}
-                strokeWidth={6}
-                strokeLinecap="round"
-              />
-              <text
-                x={cx + Math.cos(angleRad) * (robotR + maxBarLen + 14)}
-                y={cy + Math.sin(angleRad) * (robotR + maxBarLen + 14)}
-                textAnchor="middle"
-                dominantBaseline="middle"
-                fontSize={9}
-                fill="#64748b"
-              >
-                {Math.round(value)}
-              </text>
-            </g>
-          );
-        })}
-      </svg>
+            return (
+              <g key={name}>
+                <line
+                  x1={x1} y1={y1} x2={x2} y2={y2}
+                  stroke={sensorColor(value)}
+                  strokeWidth={6}
+                  strokeLinecap="round"
+                />
+                <text
+                  x={cx + Math.cos(angleRad) * (robotR + maxBarLen + 14)}
+                  y={cy + Math.sin(angleRad) * (robotR + maxBarLen + 14)}
+                  textAnchor="middle"
+                  dominantBaseline="middle"
+                  fontSize={9}
+                  fill="#64748b"
+                >
+                  {Math.round(value)}
+                </text>
+              </g>
+            );
+          })}
+        </svg>
+      </div>
     </div>
   );
 }

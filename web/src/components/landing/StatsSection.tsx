@@ -1,8 +1,8 @@
 const STATS = [
-  { value: "8", label: "Sensores IR" },
-  { value: "5cm", label: "Resolucion de mapa" },
-  { value: "32ms", label: "Ciclo reflexivo" },
-  { value: "2", label: "Capas de IA" },
+  { value: "8", label: "IR Sensors" },
+  { value: "5cm", label: "Map Resolution" },
+  { value: "32ms", label: "Reflex Cycle" },
+  { value: "2", label: "AI Layers" },
 ];
 
 export function StatsSection() {

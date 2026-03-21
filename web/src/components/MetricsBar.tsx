@@ -1,3 +1,4 @@
+import { cn } from "@/lib/utils";
 import type { RobotState } from "../types/robot";
 
 interface Props {
@@ -17,33 +18,19 @@ export function MetricsBar({ state }: Props) {
   const terrain = sensors.terreno_detectado;
 
   return (
-    <div
-      style={{
-        display: "flex",
-        gap: 16,
-        padding: "8px 12px",
-        background: "#1e293b",
-        borderRadius: 6,
-        fontSize: 13,
-        color: "#e2e8f0",
-        flexWrap: "wrap",
-        alignItems: "center",
-      }}
-    >
-      <span>step: <b>{step}</b></span>
-      <span>explorado: <b>{map.explored_pct.toFixed(1)}%</b></span>
-      <span>claude: <b>{claude_calls}/200</b></span>
-      <span>terreno: <b>{TERRAIN_EMOJI[terrain] || "?"} {terrain}</b></span>
-      <span>slip: <b>{(sensors.slip_ratio * 100).toFixed(0)}%</b></span>
+    <div className="liquid-glass flex flex-wrap items-center gap-4 rounded-2xl px-5 py-3 font-body text-sm text-white/60">
+      <span>step: <b className="text-white">{step}</b></span>
+      <span>explored: <b className="text-white">{map.explored_pct.toFixed(1)}%</b></span>
+      <span>claude: <b className="text-white">{claude_calls}/200</b></span>
+      <span>terrain: <b className="text-white">{TERRAIN_EMOJI[terrain] || "?"} {terrain}</b></span>
+      <span>slip: <b className="text-white">{(sensors.slip_ratio * 100).toFixed(0)}%</b></span>
       <span
-        style={{
-          marginLeft: "auto",
-          padding: "2px 8px",
-          borderRadius: 4,
-          fontSize: 12,
-          background: mode === "manual" ? "#854d0e" : "#1e3a5f",
-          color: mode === "manual" ? "#fde047" : "#93c5fd",
-        }}
+        className={cn(
+          "ml-auto rounded-full px-3 py-1 text-xs font-medium",
+          mode === "manual"
+            ? "bg-yellow-500/20 text-yellow-300"
+            : "bg-blue-500/20 text-blue-300"
+        )}
       >
         {mode === "manual" ? "MANUAL" : "AUTO"}
       </span>

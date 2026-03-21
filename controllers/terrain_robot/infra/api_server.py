@@ -106,14 +106,10 @@ class CommandQueue:
 _ws_clients: set = set()
 
 
-async def _ws_handler(reader: asyncio.StreamReader, writer: asyncio.StreamWriter):
-    """Maneja una conexion WebSocket raw (handshake + frames)."""
-    # Este es un approach simplificado. Para produccion usar websockets library.
-    pass
-
 
 async def _broadcast_loop(shared_state: SharedState, interval_steps: int = 10):
     """Loop que broadcastea estado a clientes WebSocket."""
+    global _ws_clients
     try:
         import websockets
         import websockets.server

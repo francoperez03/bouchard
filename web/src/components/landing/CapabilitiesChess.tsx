@@ -2,25 +2,25 @@ import { SectionBadge } from "./SectionBadge";
 
 const ROWS = [
   {
-    title: "Reflejos a 32ms. Instinto puro.",
+    title: "Reflexes at 32ms. Pure instinct.",
     description:
-      "La capa reflexiva corre cada step de simulacion. Detecta obstaculos con 8 sensores IR, clasifica terreno por vibracion y traccion, y frena en emergencias. No espera. No piensa. Reacciona.",
-    detail: `Obstaculos → evasion inmediata
-Terreno arena → velocidad al 30%
-Inclinacion → compensacion de gravedad
-Slip > 0.3 → reduccion de potencia
-Peligro → freno de emergencia`,
+      "The reflex layer runs every simulation step. Detects obstacles with 8 IR sensors, classifies terrain by vibration and traction, and brakes on emergencies. It doesn't wait. It doesn't think. It reacts.",
+    detail: `Obstacles → immediate evasion
+Sand terrain → speed at 30%
+Tilt → gravity compensation
+Slip > 0.3 → power reduction
+Danger → emergency brake`,
     reverse: false,
   },
   {
-    title: "IA que piensa, no reacciona.",
+    title: "AI that thinks, not reacts.",
     description:
-      "La capa estrategica consulta a Claude periodicamente. Analiza el mapa de ocupacion, identifica fronteras inexploradas, y decide hacia donde ir. No controla motores — planifica rutas. El robot ejecuta, la IA dirige.",
+      "The strategy layer queries Claude periodically. Analyzes the occupancy map, identifies unexplored frontiers, and decides where to go. It doesn't control motors — it plans routes. The robot executes, the AI directs.",
     detail: `set_exploration_target(x, y)
-backtrack() → volver a zona segura
+backtrack() → return to safe zone
 patrol_area(x1, y1, x2, y2)
-investigate(x, y) → punto de interes
-Cache de respuestas (TTL: 500 steps)`,
+investigate(x, y) → point of interest
+Response cache (TTL: 500 steps)`,
     reverse: true,
   },
 ];
@@ -30,9 +30,9 @@ export function CapabilitiesChess() {
     <section id="capacidades" className="px-6 py-24 md:px-16 lg:px-24">
       <div className="mx-auto max-w-7xl">
         <div className="mb-16 text-center">
-          <SectionBadge label="Dos Capas" />
+          <SectionBadge label="Two Layers" />
           <h2 className="mt-6 font-heading text-4xl italic tracking-tight leading-[0.9] text-white md:text-5xl">
-            Reflejos rapidos. Estrategia profunda.
+            Fast reflexes. Deep strategy.
           </h2>
         </div>
 

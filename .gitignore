@@ -17,3 +17,5 @@ controllers/terrain_robot/config.py
 # Frontend
 web/node_modules/
 web/dist/
+
+docs

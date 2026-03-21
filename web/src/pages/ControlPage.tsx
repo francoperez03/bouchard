@@ -1,19 +1,25 @@
 import { useRobotState } from "../hooks/useRobotState";
+import { useCommandHistory } from "../hooks/useCommandHistory";
 import { useConnection } from "../contexts/ConnectionContext";
 import { CommandPanel } from "../components/CommandPanel";
+import { CommandHistory } from "../components/CommandHistory";
 import { ModeSwitch } from "../components/ModeSwitch";
 import { MetricsBar } from "../components/MetricsBar";
-import { MapCanvas } from "../components/MapCanvas";
+import { UnifiedMap } from "../components/UnifiedMap";
+import { SensorMiniOverlay } from "../components/SensorMiniOverlay";
 
 export function ControlPage() {
   const { connected } = useConnection();
-  const { state, lastCommandResult } = useRobotState();
+  const { state, poseTrail, lastCommandResult } = useRobotState();
+  const commandHistory = useCommandHistory(lastCommandResult);
 
   if (!connected || !state) {
     return (
-      <div style={{ padding: 20, color: "#94a3b8" }}>
-        <h2 style={{ fontSize: 20 }}>Control Remoto</h2>
-        <p>Esperando conexion al robot...</p>
+      <div className="flex flex-col items-center justify-center py-32 text-center">
+        <h2 className="font-heading text-3xl italic text-white">Remote Control</h2>
+        <p className="mt-4 font-body text-sm text-white/60">
+          Waiting for robot connection...
+        </p>
       </div>
     );
   }
@@ -24,36 +30,28 @@ export function ControlPage() {
     <div>
       <MetricsBar state={state} />
 
-      <div style={{ marginTop: 16, display: "flex", alignItems: "center", gap: 16 }}>
-        <h2 style={{ fontSize: 18, margin: 0 }}>Control Remoto</h2>
+      <div className="mt-6 flex items-center gap-4">
+        <h2 className="font-heading text-2xl italic text-white">Remote Control</h2>
         <ModeSwitch mode={state.mode} />
       </div>
 
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "auto 1fr",
-          gap: 24,
-          marginTop: 16,
-        }}
-      >
-        <CommandPanel disabled={!isManual} lastCommandResult={lastCommandResult} />
-        <MapCanvas map={state.map} pose={state.sensors.pose} />
+      <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-[320px_1fr]">
+        <div className="flex flex-col gap-6">
+          <CommandPanel disabled={!isManual} lastCommandResult={lastCommandResult} />
+          <CommandHistory entries={commandHistory} />
+        </div>
+        <UnifiedMap
+          map={state.map}
+          pose={state.sensors.pose}
+          trail={poseTrail}
+          overlay={<SensorMiniOverlay sensors={state.sensors} />}
+        />
       </div>
 
       {!isManual && (
-        <div
-          style={{
-            marginTop: 12,
-            padding: 10,
-            borderRadius: 6,
-            background: "#1e3a5f",
-            border: "1px solid #3b82f6",
-            fontSize: 13,
-            color: "#93c5fd",
-          }}
-        >
-          Modo autonomo activo. Cambia a Manual para enviar comandos. El boton Frenar funciona en ambos modos.
+        <div className="liquid-glass mt-4 rounded-2xl border border-blue-500/30 p-4 font-body text-sm text-blue-300">
+          Autonomous mode active. Switch to Manual to send commands. The Brake
+          button works in both modes.
         </div>
       )}
     </div>

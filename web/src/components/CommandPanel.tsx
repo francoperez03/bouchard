@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
+import { cn } from "@/lib/utils";
 import { useCommands } from "../hooks/useCommands";
 import type { CommandResultMessage } from "../types/robot";
 
@@ -31,7 +32,7 @@ export function CommandPanel({ disabled, lastCommandResult }: Props) {
         setToast({ text: "Queued", color: "#22c55e" });
         setTimeout(() => setToast(null), 1500);
       } else if (res.status === "ignored") {
-        setToast({ text: res.reason || "Ignorado (modo autonomo)", color: "#94a3b8" });
+        setToast({ text: res.reason || "Ignored (autonomous mode)", color: "#94a3b8" });
         setTimeout(() => setToast(null), 2000);
       } else if (res.status === "error") {
         setToast({ text: res.message || "Error", color: "#ef4444" });
@@ -60,50 +61,63 @@ export function CommandPanel({ disabled, lastCommandResult }: Props) {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [handleKeyDown]);
 
-  const btnStyle = (color: string) => ({
-    width: 56,
-    height: 56,
-    borderRadius: 8,
-    border: "1px solid #475569",
-    background: disabled ? "#1e293b" : color,
-    color: disabled ? "#475569" : "#fff",
-    cursor: disabled ? "not-allowed" : "pointer",
-    fontSize: 20,
-    display: "flex" as const,
-    alignItems: "center" as const,
-    justifyContent: "center" as const,
-  });
+  const btnBase = "flex h-14 w-14 items-center justify-center rounded-xl text-xl transition-colors";
 
   return (
-    <div>
-      <h3 style={{ fontSize: 14, marginBottom: 8, color: "#94a3b8" }}>Comandos</h3>
+    <div className="liquid-glass rounded-2xl p-6">
+      <h3 className="font-heading text-lg italic text-white">Commands</h3>
 
       {/* D-pad */}
-      <div style={{ display: "grid", gridTemplateColumns: "56px 56px 56px", gap: 4, width: "fit-content" }}>
+      <div className="mt-4 grid w-fit grid-cols-3 gap-1">
         <div />
-        <button style={btnStyle("#334155")} disabled={disabled} onClick={() => cmd("avanzar", { velocidad: speed })} title="Avanzar (W)">
+        <button
+          className={cn(btnBase, disabled ? "cursor-not-allowed bg-white/5 text-white/20" : "liquid-glass-strong cursor-pointer text-white hover:bg-white/10")}
+          disabled={disabled}
+          onClick={() => cmd("avanzar", { velocidad: speed })}
+          title="Forward (W)"
+        >
           &uarr;
         </button>
         <div />
-        <button style={btnStyle("#334155")} disabled={disabled} onClick={() => cmd("girar", { grados: -45, velocidad: speed })} title="Girar izq (A)">
+        <button
+          className={cn(btnBase, disabled ? "cursor-not-allowed bg-white/5 text-white/20" : "liquid-glass-strong cursor-pointer text-white hover:bg-white/10")}
+          disabled={disabled}
+          onClick={() => cmd("girar", { grados: -45, velocidad: speed })}
+          title="Turn left (A)"
+        >
           &larr;
         </button>
-        <button style={{ ...btnStyle("#991b1b"), borderColor: "#ef4444" }} disabled={disabled} onClick={() => cmd("frenar")} title="Frenar (Space)">
+        <button
+          className={cn(btnBase, disabled ? "cursor-not-allowed bg-white/5 text-white/20" : "cursor-pointer bg-red-900/40 text-red-400 ring-1 ring-red-500/50 hover:bg-red-900/60")}
+          disabled={disabled}
+          onClick={() => cmd("frenar")}
+          title="Brake (Space)"
+        >
           &#9632;
         </button>
-        <button style={btnStyle("#334155")} disabled={disabled} onClick={() => cmd("girar", { grados: 45, velocidad: speed })} title="Girar der (D)">
+        <button
+          className={cn(btnBase, disabled ? "cursor-not-allowed bg-white/5 text-white/20" : "liquid-glass-strong cursor-pointer text-white hover:bg-white/10")}
+          disabled={disabled}
+          onClick={() => cmd("girar", { grados: 45, velocidad: speed })}
+          title="Turn right (D)"
+        >
           &rarr;
         </button>
         <div />
-        <button style={btnStyle("#334155")} disabled={disabled} onClick={() => cmd("retroceder", { velocidad: speed })} title="Retroceder (S)">
+        <button
+          className={cn(btnBase, disabled ? "cursor-not-allowed bg-white/5 text-white/20" : "liquid-glass-strong cursor-pointer text-white hover:bg-white/10")}
+          disabled={disabled}
+          onClick={() => cmd("retroceder", { velocidad: speed })}
+          title="Reverse (S)"
+        >
           &darr;
         </button>
         <div />
       </div>
 
       {/* Speed slider */}
-      <div style={{ marginTop: 12, display: "flex", alignItems: "center", gap: 8 }}>
-        <label style={{ fontSize: 12, color: "#94a3b8" }}>Vel:</label>
+      <div className="mt-4 flex items-center gap-3">
+        <label className="font-body text-xs text-white/40">Speed:</label>
         <input
           type="range"
           min={0}
@@ -111,28 +125,21 @@ export function CommandPanel({ disabled, lastCommandResult }: Props) {
           value={speed}
           onChange={(e) => setSpeed(Number(e.target.value))}
           disabled={disabled}
-          style={{ flex: 1 }}
+          className="flex-1 accent-white"
         />
-        <span style={{ fontSize: 13, color: "#e2e8f0", minWidth: 30 }}>{speed}</span>
+        <span className="min-w-[30px] font-body text-sm text-white/80">{speed}</span>
       </div>
 
       {/* Keyboard hint */}
-      <div style={{ marginTop: 8, fontSize: 11, color: "#475569" }}>
-        WASD / Flechas + Space = frenar
+      <div className="mt-3 font-body text-xs text-white/30">
+        WASD / Arrows + Space = brake
       </div>
 
       {/* Toast */}
       {toast && (
         <div
-          style={{
-            marginTop: 8,
-            padding: "4px 10px",
-            borderRadius: 4,
-            fontSize: 12,
-            background: "#0f172a",
-            color: toast.color,
-            border: `1px solid ${toast.color}`,
-          }}
+          className="liquid-glass mt-3 rounded-xl px-3 py-2 font-body text-xs"
+          style={{ color: toast.color }}
         >
           {toast.text}
         </div>

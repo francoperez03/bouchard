@@ -1,9 +1,9 @@
 import json
 import urllib.request
 import urllib.error
-from prompts import SYSTEM_PROMPT
-from config import CLAUDE_API_KEY
-from cache import ResponseCache
+from .prompts import SYSTEM_PROMPT
+from .config import CLAUDE_API_KEY
+from .cache import ResponseCache
 
 _cache = ResponseCache(ttl_steps=500)
 
@@ -96,11 +96,15 @@ STRATEGY_TOOLS = [
 
 def _parse_claude_response(content):
     """Parsea la respuesta de Claude, limpiando markdown si es necesario.
-    Fallback para respuestas text-only (rate-limited/degraded)."""
+    Retorna None si el contenido no es JSON (texto libre)."""
     content = content.strip()
     if content.startswith("```"):
         content = content.split("\n", 1)[1].rsplit("```", 1)[0].strip()
-    return json.loads(content)
+    try:
+        return json.loads(content)
+    except json.JSONDecodeError:
+        print(f"[claude_client] Respuesta text-only (no JSON), ignorando: {content[:200]}")
+        return None
 
 
 def _compact_data(sensor_data):
@@ -212,7 +216,7 @@ def ask_claude(sensor_data, history=None, current_step=0, map_data=None, feedbac
         print(f"[claude_client] HTTP {e.code}: {error_body}")
         return None
     except json.JSONDecodeError as e:
-        print(f"[claude_client] JSON malformado: {e}")
+        print(f"[claude_client] JSON malformado en response body: {e}")
         return None
     except Exception as e:
         print(f"[claude_client] Error: {e}")

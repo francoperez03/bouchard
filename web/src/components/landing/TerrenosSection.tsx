@@ -4,24 +4,24 @@ const TERRENOS = [
   {
     name: "Metal",
     color: "#94a3b8",
-    friction: "Baja",
+    friction: "Low",
     speed: "60%",
-    description: "Superficie lisa, traccion alta. Velocidad maxima del robot.",
+    description: "Smooth surface, high traction. Maximum robot speed.",
   },
   {
-    name: "Arena",
+    name: "Sand",
     color: "#eab308",
     friction: "Variable",
     speed: "30%",
     description:
-      "Deslizamiento alto. Compensacion de slip activa, velocidad reducida.",
+      "High slip. Active slip compensation, reduced speed.",
   },
   {
     name: "Carpet",
     color: "#a78bfa",
-    friction: "Alta",
+    friction: "High",
     speed: "50%",
-    description: "Traccion estable. Navegacion predecible y segura.",
+    description: "Stable traction. Predictable and safe navigation.",
   },
   {
     name: "Rough",
@@ -29,15 +29,15 @@ const TERRENOS = [
     friction: "Irregular",
     speed: "40%",
     description:
-      "Vibracion alta detectada por acelerometro. Monitoreo de estabilidad.",
+      "High vibration detected by accelerometer. Stability monitoring.",
   },
   {
-    name: "Rampa",
+    name: "Ramp",
     color: "#22c55e",
-    friction: "Media",
+    friction: "Medium",
     speed: "35%",
     description:
-      "Inclinacion detectada via eje Z del acelerometro. Ajuste de potencia.",
+      "Tilt detected via accelerometer Z-axis. Power adjustment.",
   },
 ];
 
@@ -46,9 +46,9 @@ export function TerrenosSection() {
     <section id="terrenos" className="px-6 py-24 md:px-16 lg:px-24">
       <div className="mx-auto max-w-5xl">
         <div className="mb-16 text-center">
-          <SectionBadge label="Terrenos" />
+          <SectionBadge label="Terrains" />
           <h2 className="mt-6 font-heading text-4xl italic tracking-tight leading-[0.9] text-white md:text-5xl">
-            Cinco superficies. Adaptacion total.
+            Five surfaces. Total adaptation.
           </h2>
         </div>
 
@@ -71,8 +71,8 @@ export function TerrenosSection() {
                 {t.description}
               </p>
               <div className="mt-4 flex gap-4 font-body text-xs text-white/40">
-                <span>Friccion: {t.friction}</span>
-                <span>Vel: {t.speed}</span>
+                <span>Friction: {t.friction}</span>
+                <span>Speed: {t.speed}</span>
               </div>
             </div>
           ))}
