@@ -20,7 +20,12 @@
 | 11 | History Compression | 3 | S | Draft | 10 |
 | 12 | Complex Arena | 4 | L | Draft | 06 |
 | 13 | Benchmark System | 4 | M | Draft | 12 |
-| 14 | Metrics Dashboard | 4 | M | Draft | 10, 13 |
+| 14 | ~~Metrics Dashboard~~ | 4 | M | Reemplazado | 10, 13 |
+| 15 | Landing Page | 5 | S | Draft | - |
+| 16 | Real-time Status Dashboard | 5 | L | Draft | 05, 06, 07, 15 |
+| 17 | Remote Command Interface | 5 | M | Draft | 07, 15, 16 |
+
+> **Nota:** PRD-14 reemplazado por PRD-16 (solucion web real-time mas completa).
 
 ## Arbol de Dependencias
 
@@ -43,7 +48,12 @@ Phase 3 (depende de Phase 2):
 
 Phase 4 (depende de Phase 2+3):
   PRD-06 ──> PRD-12 Complex Arena ──> PRD-13 Benchmark System
-  PRD-10 ──> PRD-14 Metrics Dashboard <── PRD-13
+  PRD-10 ──> PRD-14 Metrics Dashboard <── PRD-13  [REEMPLAZADO por PRD-16]
+
+Phase 5 - Web Interface (depende de Phase 2):
+  PRD-15 Landing Page ──> PRD-16 Real-time Status ──> PRD-17 Remote Command
+                               ^
+  PRD-05, PRD-06, PRD-07 ─────┘
 ```
 
 ## Estimacion Total
@@ -54,7 +64,8 @@ Phase 4 (depende de Phase 2+3):
 | 2 | Core Architecture | 3x M + 1x L | 2-3 |
 | 3 | Intelligence | 2x M + 1x S | 1-2 |
 | 4 | Validation | 1x L + 2x M | 2-3 |
-| **Total** | | | **~8 semanas** |
+| 5 | Web Interface | 1x S + 1x L + 1x M | 3-4 |
+| **Total** | | | **~11-12 semanas** |
 
 ## Producto Champion
 
@@ -79,6 +90,13 @@ bouchard/
     config.py           # API key config
   worlds/
     terrain_arena.wbt   # Arena 3x3m, 4 terrenos + rampa
+  web/                  # Frontend Vite + React (Phase 5)
+    src/
+      pages/            # HomePage, StatusPage, ControlPage
+      components/       # SensorPanel, MapCanvas, CommandPanel, etc.
+      contexts/         # ConnectionContext (WebSocket)
+      hooks/            # useRobotState, useCommands
+      types/            # TypeScript interfaces
   docs/
     prd/                # Este directorio
 ```

@@ -6,6 +6,7 @@ Se actualiza periodicamente. Usa GoalManager para ciclo de vida de goals.
 import math
 from goal_manager import GoalManager
 from feedback import FeedbackTracker
+from history_manager import HistoryManager
 
 
 class StrategyResult:
@@ -31,6 +32,7 @@ class StrategyLayer:
         self._last_terreno = ""
         self._goals = GoalManager()
         self._feedback = FeedbackTracker()
+        self._history = HistoryManager()
 
     @property
     def claude_calls(self):
@@ -45,6 +47,10 @@ class StrategyLayer:
 
     def print_feedback_stats(self):
         self._feedback.print_stats()
+
+    def record_step(self, data, action=""):
+        """Delegate to HistoryManager for session history recording."""
+        self._history.record_step(data, action)
 
     def _compute_heading_to_target(self, pose, target_x, target_y):
         """Compute required turn angle to face target from current pose."""
@@ -87,6 +93,10 @@ class StrategyLayer:
             outcome = outcome_map.get(prev_goal.state.value, "partial")
             self._feedback.end_plan(outcome, step=step_count, pose=pose,
                                     reason=getattr(prev_goal, 'reason', ''))
+            # Record goal transition in session history
+            self._history.record_event(
+                f"goal {prev_goal.type} {outcome} at step {step_count}"
+            )
 
         # Determine if Claude should be called
         should_call = (
@@ -103,9 +113,11 @@ class StrategyLayer:
                 print(f"\n[strategy] Claude call #{self._calls}/{self._max_calls}")
 
                 feedback = self._feedback.get_feedback_for_claude()
+                session_history = self._history.get_compact_history()
                 plan = self._ask_claude(
                     data, history=None, current_step=step_count,
-                    map_data=map_data, feedback=feedback
+                    map_data=map_data, feedback=feedback,
+                    session_history=session_history
                 )
 
                 if plan and "goal" in plan:

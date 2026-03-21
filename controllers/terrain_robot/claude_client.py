@@ -122,7 +122,7 @@ def get_cache():
     return _cache
 
 
-def ask_claude(sensor_data, history=None, current_step=0, map_data=None, feedback=None):
+def ask_claude(sensor_data, history=None, current_step=0, map_data=None, feedback=None, session_history=None):
     """Envia contexto estrategico a Claude API con tool_use y retorna el plan.
     Usa cache para evitar llamadas repetidas con mismo estado cuantizado."""
     compact = _compact_data(sensor_data)
@@ -151,6 +151,8 @@ def ask_claude(sensor_data, history=None, current_step=0, map_data=None, feedbac
         user_content["map"] = map_data
     if feedback:
         user_content["feedback"] = feedback
+    if session_history:
+        user_content["history"] = session_history
 
     user_msg = json.dumps(user_content)
 
