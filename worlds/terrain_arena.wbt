@@ -1,0 +1,247 @@
+#VRML_SIM R2025a utf8
+
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/backgrounds/protos/TexturedBackground.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/backgrounds/protos/TexturedBackgroundLight.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/floors/protos/RectangleArena.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/appearances/protos/ThreadMetalPlate.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/appearances/protos/Roughcast.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/appearances/protos/SandyGround.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/appearances/protos/DryMud.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/robots/gctronic/e-puck/protos/E-puck.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/traffic/protos/TrafficCone.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/factory/containers/protos/WoodenBox.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/factory/containers/protos/CardboardBox.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/factory/containers/protos/PlasticCrate.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/obstacles/protos/OilBarrel.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/toys/protos/RubberDuck.proto"
+
+WorldInfo {
+  info [
+    "Terrain Arena Industrial - Robot E-puck con terrenos variados y obstáculos industriales."
+  ]
+  title "Terrain Arena Industrial"
+  basicTimeStep 32
+  contactProperties [
+    ContactProperties {
+      material1 "default"
+      material2 "metal"
+      coulombFriction [0.8]
+    }
+    ContactProperties {
+      material1 "default"
+      material2 "sand"
+      coulombFriction [0.3]
+      forceDependentSlip [0.02]
+    }
+    ContactProperties {
+      material1 "default"
+      material2 "carpet"
+      coulombFriction [1.2]
+    }
+    ContactProperties {
+      material1 "default"
+      material2 "rough"
+      coulombFriction [0.5]
+    }
+    ContactProperties {
+      material1 "default"
+      material2 "ramp"
+      coulombFriction [0.6]
+    }
+  ]
+}
+
+Viewpoint {
+  orientation 0.105 0.289 -0.951 0.732
+  position -1.5 1.5 1.8
+  followType "None"
+  followSmoothness 0
+}
+
+TexturedBackground {
+  texture "factory"
+}
+TexturedBackgroundLight {
+  texture "factory"
+}
+
+# === ARENA BASE (piso metálico + paredes) ===
+RectangleArena {
+  floorSize 3 3
+  floorTileSize 0.5 0.5
+  floorAppearance ThreadMetalPlate {
+    textureTransform TextureTransform {
+      scale 0.7 0.7
+    }
+  }
+  wallThickness 0.05
+  wallHeight 0.3
+  wallAppearance Roughcast {
+    colorOverride 0.5 0.5 0.5
+    textureTransform TextureTransform {
+      scale 3 3
+    }
+  }
+  contactMaterial "metal"
+}
+
+# === ZONA ARENA/SAND (cuadrante +x +y) ===
+Solid {
+  translation 0.75 0.75 0.003
+  children [
+    Shape {
+      appearance SandyGround {
+        textureTransform TextureTransform {
+          scale 3 3
+        }
+      }
+      geometry Box {
+        size 1.2 1.2 0.005
+      }
+    }
+  ]
+  name "floor_sand"
+  contactMaterial "sand"
+  boundingObject Box {
+    size 1.2 1.2 0.005
+  }
+}
+
+# === ZONA ALFOMBRA (cuadrante -x -y) ===
+Solid {
+  translation -0.75 -0.75 0.003
+  children [
+    Shape {
+      appearance PBRAppearance {
+        baseColor 0.5 0.1 0.1
+        roughness 1.0
+        metalness 0
+      }
+      geometry Box {
+        size 1.2 1.2 0.005
+      }
+    }
+  ]
+  name "floor_carpet"
+  contactMaterial "carpet"
+  boundingObject Box {
+    size 1.2 1.2 0.005
+  }
+}
+
+# === ZONA RUGOSA (cuadrante +x -y) ===
+Solid {
+  translation 0.75 -0.75 0.003
+  children [
+    Shape {
+      appearance DryMud {
+        textureTransform TextureTransform {
+          scale 3 3
+        }
+      }
+      geometry Box {
+        size 1.2 1.2 0.005
+      }
+    }
+  ]
+  name "floor_rough"
+  contactMaterial "rough"
+  boundingObject Box {
+    size 1.2 1.2 0.005
+  }
+}
+
+# === RAMPA (transición centro-abajo) ===
+Solid {
+  translation 0 -0.2 0.08
+  rotation 1 0 0 0.2
+  children [
+    Shape {
+      appearance PBRAppearance {
+        baseColor 0.4 0.4 0.4
+        roughness 0.7
+        metalness 0.3
+      }
+      geometry Box {
+        size 0.6 0.5 0.01
+      }
+    }
+  ]
+  name "ramp"
+  contactMaterial "ramp"
+  boundingObject Box {
+    size 0.6 0.5 0.01
+  }
+}
+
+# === OBJETOS INDUSTRIALES ===
+
+# Conos de tráfico
+TrafficCone {
+  translation 0.5 0.5 0
+  name "cone_1"
+}
+TrafficCone {
+  translation 0.9 -0.6 0
+  name "cone_2"
+}
+
+# Cajas de madera
+WoodenBox {
+  translation -0.6 0.3 0.05
+  rotation 0 0 1 0.5
+  name "box_1"
+  size 0.1 0.1 0.1
+}
+WoodenBox {
+  translation 0.3 -0.9 0.05
+  rotation 0 0 1 0.8
+  name "box_2"
+  size 0.1 0.1 0.1
+}
+
+# Cajas de cartón
+CardboardBox {
+  translation 0.6 -1.0 0.05
+  rotation 0 0 1 0.3
+  name "cbox_1"
+  size 0.1 0.1 0.1
+}
+CardboardBox {
+  translation -0.3 -0.5 0.05
+  rotation 0 0 1 1.2
+  name "cbox_2"
+  size 0.1 0.1 0.1
+}
+
+# Caja plástica
+PlasticCrate {
+  translation -0.9 0.7 0
+  name "crate_1"
+  size 0.15 0.25 0.1
+}
+
+# Barriles de aceite
+OilBarrel {
+  translation -1.0 -0.3 0.44
+  name "barrel_1"
+}
+OilBarrel {
+  translation 1.0 0.2 0.44
+  name "barrel_2"
+}
+
+# Pato de goma (landmark central)
+RubberDuck {
+  translation -0.5 1.0 0
+  rotation 0 0 1 0.785
+  scale 3
+}
+
+# === E-PUCK ===
+E-puck {
+  translation -0.5 0.5 0
+  rotation 0 0 1 0
+  name "terrain_robot"
+  controller "terrain_robot"
+}

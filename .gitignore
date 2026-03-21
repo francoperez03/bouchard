@@ -1,0 +1,14 @@
+# ESP-IDF build
+build/
+sdkconfig
+sdkconfig.old
+
+# Webots
+*.wbproj
+
+# Python
+__pycache__/
+*.pyc
+
+# Config con API keys
+controllers/terrain_robot/config.py
