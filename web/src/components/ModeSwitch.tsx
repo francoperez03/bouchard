@@ -5,39 +5,57 @@ interface Props {
   mode: "autonomous" | "manual";
 }
 
+const MODES = [
+  {
+    id: "manual" as const,
+    label: "Manual",
+    icon: (
+      <svg width={20} height={20} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
+        <circle cx={12} cy={7} r={4} />
+        <path d="M5.5 21a6.5 6.5 0 0 1 13 0" />
+      </svg>
+    ),
+  },
+  {
+    id: "autonomous" as const,
+    label: "Autonomous",
+    icon: (
+      <svg width={20} height={20} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
+        <path d="M12 2v4" />
+        <path d="M12 18v4" />
+        <path d="M4.93 4.93l2.83 2.83" />
+        <path d="M16.24 16.24l2.83 2.83" />
+        <path d="M2 12h4" />
+        <path d="M18 12h4" />
+        <circle cx={12} cy={12} r={3} />
+      </svg>
+    ),
+  },
+] as const;
+
 export function ModeSwitch({ mode }: Props) {
   const { sendCommand } = useCommands();
-  const isManual = mode === "manual";
-
-  const toggle = () => {
-    sendCommand({
-      fn: "set_mode",
-      args: { mode: isManual ? "autonomous" : "manual" },
-    });
-  };
 
   return (
-    <div className="flex items-center gap-3">
-      <span className={cn("font-body text-sm", isManual ? "text-white/30" : "text-blue-300")}>
-        Auto
-      </span>
-      <button
-        onClick={toggle}
-        className={cn(
-          "relative h-7 w-12 cursor-pointer rounded-full border-none transition-colors",
-          isManual ? "bg-yellow-800" : "bg-blue-900"
-        )}
-      >
-        <div
-          className={cn(
-            "absolute top-[3px] h-5 w-5 rounded-full transition-[left] duration-200",
-            isManual ? "left-[25px] bg-yellow-300" : "left-[3px] bg-blue-300"
-          )}
-        />
-      </button>
-      <span className={cn("font-body text-sm", isManual ? "text-yellow-300" : "text-white/30")}>
-        Manual
-      </span>
+    <div className="flex w-full gap-2">
+      {MODES.map((m) => {
+        const active = mode === m.id;
+        return (
+          <button
+            key={m.id}
+            onClick={() => sendCommand({ fn: "set_mode", args: { mode: m.id } })}
+            className={cn(
+              "flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-xl px-4 py-3 font-body text-sm font-medium transition-all",
+              active
+                ? "liquid-glass-strong text-white shadow-lg"
+                : "bg-white/5 text-white/30 hover:bg-white/10 hover:text-white/50"
+            )}
+          >
+            {m.icon}
+            {m.label}
+          </button>
+        );
+      })}
     </div>
   );
 }

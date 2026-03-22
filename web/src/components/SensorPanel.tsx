@@ -1,3 +1,4 @@
+import { cn } from "@/lib/utils";
 import type { SensorData } from "../types/robot";
 
 const SENSOR_ANGLES: Record<string, number> = {
@@ -25,9 +26,25 @@ export function SensorPanel({ sensors }: Props) {
   const robotR = 24;
   const maxBarLen = 50;
 
+  // Nearest obstacle distance (front_min is raw IR value, approximate to meters)
+  const obstacleDistM = sensors.front_min > 0
+    ? Math.max(0, (1 - sensors.front_min / 300) * 1.5).toFixed(2)
+    : "—";
+  const obstacleColor = sensors.front_min >= PROX_DANGER
+    ? "text-red-400"
+    : sensors.front_min >= PROX_WARNING
+      ? "text-yellow-400"
+      : "text-green-400";
+
   return (
     <div className="liquid-glass rounded-2xl p-6">
-      <h3 className="font-heading text-lg italic text-white">IR Sensors</h3>
+      <div className="flex items-center justify-between">
+        <h3 className="font-heading text-lg italic text-white">IR Array</h3>
+        <span className="rounded-full bg-green-500/20 px-3 py-0.5 font-body text-xs font-medium text-green-400">
+          Active
+        </span>
+      </div>
+
       <div className="mt-4 flex justify-center">
         <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
           {/* Robot body */}
@@ -68,6 +85,17 @@ export function SensorPanel({ sensors }: Props) {
             );
           })}
         </svg>
+      </div>
+
+      {/* Obstacle distance readout */}
+      <div className="mt-4 flex items-center justify-between rounded-xl bg-white/5 px-4 py-3">
+        <span className="font-body text-xs text-white/40">Obstacle</span>
+        <div className="flex items-baseline gap-1">
+          <span className={cn("font-heading text-2xl italic", obstacleColor)}>
+            {obstacleDistM}
+          </span>
+          <span className="font-body text-sm text-white/40">m</span>
+        </div>
       </div>
     </div>
   );

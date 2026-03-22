@@ -1,8 +1,9 @@
 import { useRobotState } from "../hooks/useRobotState";
 import { useEventFeed } from "../hooks/useEventFeed";
 import { useConnection } from "../contexts/ConnectionContext";
+import { TelemetryHero } from "../components/TelemetryHero";
+import { OrientationPanel } from "../components/OrientationPanel";
 import { SensorPanel } from "../components/SensorPanel";
-import { IMUPanel } from "../components/IMUPanel";
 import { UnifiedMap } from "../components/UnifiedMap";
 import { LayerStatus } from "../components/LayerStatus";
 import { MetricsBar } from "../components/MetricsBar";
@@ -31,24 +32,30 @@ export function StatusPage() {
 
   return (
     <div>
+      {/* Compact mode/stats bar */}
       <MetricsBar state={state} />
 
-      {/* Full-width unified map */}
-      <div className="mt-6">
+      {/* Top row: Telemetry + Orientation (left) | Map (center) | IR Array (right) */}
+      <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-[280px_1fr_280px]">
+        {/* Left column: Telemetry hero + Orientation */}
+        <div className="flex flex-col gap-6">
+          <TelemetryHero state={state} />
+          <OrientationPanel sensors={state.sensors} />
+        </div>
+
+        {/* Center: Map */}
         <UnifiedMap
           map={state.map}
           pose={state.sensors.pose}
           trail={poseTrail}
         />
+
+        {/* Right column: IR Array */}
+        <SensorPanel sensors={state.sensors} />
       </div>
 
-      {/* Three-column panel row */}
-      <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-3">
-        <div className="flex flex-col gap-6">
-          <SensorPanel sensors={state.sensors} />
-          <IMUPanel sensors={state.sensors} />
-        </div>
-
+      {/* Bottom row: Layers + Terrain | Event Log */}
+      <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-2">
         <div className="flex flex-col gap-6">
           <LayerStatus
             reflex={state.reflex}

@@ -1,5 +1,6 @@
 import { useRobotState } from "../hooks/useRobotState";
 import { useCommandHistory } from "../hooks/useCommandHistory";
+import { useEventFeed } from "../hooks/useEventFeed";
 import { useConnection } from "../contexts/ConnectionContext";
 import { CommandPanel } from "../components/CommandPanel";
 import { CommandHistory } from "../components/CommandHistory";
@@ -7,11 +8,13 @@ import { ModeSwitch } from "../components/ModeSwitch";
 import { MetricsBar } from "../components/MetricsBar";
 import { UnifiedMap } from "../components/UnifiedMap";
 import { SensorMiniOverlay } from "../components/SensorMiniOverlay";
+import { EventFeed } from "../components/EventFeed";
 
 export function ControlPage() {
   const { connected } = useConnection();
   const { state, poseTrail, lastCommandResult } = useRobotState();
   const commandHistory = useCommandHistory(lastCommandResult);
+  const events = useEventFeed(state);
 
   if (!connected || !state) {
     return (
@@ -30,22 +33,27 @@ export function ControlPage() {
     <div>
       <MetricsBar state={state} />
 
-      <div className="mt-6 flex items-center gap-4">
-        <h2 className="font-heading text-2xl italic text-white">Remote Control</h2>
-        <ModeSwitch mode={state.mode} />
-      </div>
-
+      {/* Main grid: controls left, map right */}
       <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-[320px_1fr]">
         <div className="flex flex-col gap-6">
           <CommandPanel disabled={!isManual} lastCommandResult={lastCommandResult} />
           <CommandHistory entries={commandHistory} />
         </div>
-        <UnifiedMap
-          map={state.map}
-          pose={state.sensors.pose}
-          trail={poseTrail}
-          overlay={<SensorMiniOverlay sensors={state.sensors} />}
-        />
+
+        <div className="flex flex-col gap-6">
+          <UnifiedMap
+            map={state.map}
+            pose={state.sensors.pose}
+            trail={poseTrail}
+            overlay={<SensorMiniOverlay sensors={state.sensors} />}
+          />
+          <EventFeed events={events} />
+        </div>
+      </div>
+
+      {/* Mode tabs at bottom */}
+      <div className="mt-6">
+        <ModeSwitch mode={state.mode} />
       </div>
 
       {!isManual && (

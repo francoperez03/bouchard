@@ -102,40 +102,45 @@ Open `http://localhost:5173`. Three views:
 ```
 bouchard/
 ├── worlds/
-│   └── terrain_arena.wbt          # 3x3m arena with 5 terrains
+│   └── terrain_arena.wbt              # 3x3m arena with 5 terrains
 ├── controllers/terrain_robot/
-│   ├── terrain_robot.py           # Main loop
-│   ├── sensors.py                 # 8 IR + accel + gyro + odometry
-│   ├── motors.py                  # Differential drive
-│   ├── reflex_layer.py            # Reflex layer (every step)
-│   ├── strategy_layer.py          # Strategy layer (periodic)
-│   ├── claude_client.py           # Claude API + tool use + cache
-│   ├── occupancy_map.py           # 5cm resolution grid
-│   ├── goal_manager.py            # Goal state machine
-│   ├── feedback.py                # Outcome feedback to Claude
-│   ├── history_manager.py         # Session history compression
-│   ├── terrain_rules.py           # Terrain constants and safety thresholds
-│   ├── api_server.py              # HTTP server for dashboard
-│   ├── executor.py                # Executes JSON plans
-│   ├── fallback.py                # Navigation without Claude
-│   ├── prompts.py                 # System prompt
-│   ├── config.py                  # Reads ANTHROPIC_API_KEY from env
-│   └── logger.py                  # CSV logging
-├── web/                           # React + Vite dashboard
+│   ├── terrain_robot.py               # Main loop
+│   ├── terrain_rules.py               # Terrain constants and safety thresholds
+│   ├── sense/                         # Perception
+│   │   ├── sensors.py                 # 8 IR + accel + gyro + odometry
+│   │   └── occupancy_map.py           # 5cm resolution grid
+│   ├── think/                         # Decision-making
+│   │   ├── reflex_layer.py            # Reflex layer (every step)
+│   │   ├── strategy_layer.py          # Strategy layer (periodic)
+│   │   ├── claude_client.py           # Claude API + tool use
+│   │   ├── cache.py                   # Response cache (TTL 500 steps)
+│   │   ├── goal_manager.py            # Goal state machine
+│   │   ├── feedback.py                # Outcome feedback to Claude
+│   │   ├── history_manager.py         # Session history compression
+│   │   ├── prompts.py                 # System prompt
+│   │   └── config.py                  # Reads ANTHROPIC_API_KEY from env
+│   ├── act/                           # Actuation
+│   │   ├── motors.py                  # Differential drive
+│   │   └── executor.py                # Executes JSON plans
+│   └── infra/                         # Infrastructure
+│       ├── api_server.py              # HTTP + WebSocket server for dashboard
+│       └── logger.py                  # CSV logging
+├── web/                               # React + Vite dashboard
 │   ├── src/
-│   │   ├── pages/                 # Landing, Status, Control
-│   │   ├── components/            # SensorPanel, MapCanvas, CommandPanel...
-│   │   ├── components/landing/    # Hero, CapabilitiesGrid, TerrenosSection...
-│   │   ├── contexts/              # WebSocket connection
-│   │   ├── hooks/                 # useRobotState, useCommands
-│   │   └── types/                 # TypeScript interfaces
+│   │   ├── pages/                     # Landing, Status, Control
+│   │   ├── components/                # SensorPanel, MapCanvas, CommandPanel...
+│   │   ├── components/landing/        # Hero, CapabilitiesGrid, TerrenosSection...
+│   │   ├── contexts/                  # WebSocket connection
+│   │   ├── hooks/                     # useRobotState, useCommands
+│   │   └── types/                     # TypeScript interfaces
 │   └── public/
-│       └── arena-demo.mov         # Simulation video
+│       └── arena-demo.mov             # Simulation video
 ├── scripts/
-│   ├── dashboard.py               # Log visualization with matplotlib
-│   └── benchmark.py               # Run comparison
-├── docs/prd/                      # Product Requirements (17 PRDs, 5 phases)
-└── requirements.txt               # matplotlib
+│   ├── dashboard.py                   # Log visualization with matplotlib
+│   ├── benchmark.py                   # Run comparison
+│   └── generate_arena.py              # Arena generation
+├── docs/prd/                          # Product Requirements (17 PRDs, 5 phases)
+└── requirements.txt                   # matplotlib, websockets
 ```
 
 ## How It Works
@@ -191,6 +196,6 @@ python scripts/benchmark.py analyze --dir results/
 - **Simulation**: Webots R2025a
 - **Robot**: e-puck (differential drive, 8 IR, IMU)
 - **AI**: Claude Haiku 4.5 (tool use)
-- **Controller**: Python (stdlib only)
+- **Controller**: Python (stdlib + websockets)
 - **Dashboard**: React 19 + TypeScript + Tailwind CSS + Vite
 - **Visualization**: matplotlib
